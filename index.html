@@ -3,7 +3,7 @@
 <head>
   <title>Regina Safety Map</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-<!--  <link rel="preload" href="https://docs.google.com/static/spreadsheets2/client/css/2704924847-waffle_k_ltr.css" as="style"> -->
+<link rel="preload" href="https://docs.google.com/static/spreadsheets2/client/css/2704924847-waffle_k_ltr.css" as="style"> 
 
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 </head>
@@ -22,8 +22,8 @@
   const sheetID = '1kcR6ZqQ0YN2E-G0uTS3mz_pFXoAa4N3CUYslbzCFw5M'; // Replace with your Google Sheet ID
 const apiKey = 'AIzaSyCgM-QmovG5LFPRwOGd_ZD_dygszYkFByI';  // Replace with your new API key
 const range = 'Form Responses 1';  // The name of your sheet or range you're accessing
-  const sheetURL = `https://sheets.googleapis.com/v4/spreadsheets/1kcR6ZqQ0YN2E-G0uTS3mz_pFXoAa4N3CUYslbzCFw5M/values/'Form%20Responses%201'?key=AIzaSyCgM-QmovG5LFPRwOGd_ZD_dygszYkFByI`;
-//const sheetURL = `https://sheets.googleapis.com/v4/spreadsheets/${sheetID}/values/'${range}'?key=${apiKey}`;
+ 
+const sheetURL = `https://sheets.googleapis.com/v4/spreadsheets/${sheetID}/values/'Form%20Responses%201'?key=${apiKey}`;
   console.log(sheetURL);
   // URL to your published Google Sheet (make sure the sheet is published to the web)
   //const sheetURL = 'https://spreadsheets.google.com/feeds/list/key/od6/public/values?alt=json';
