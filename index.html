@@ -19,8 +19,13 @@
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(map);
 
+  const sheetID = '1kcR6ZqQ0YN2E-G0uTS3mz_pFXoAa4N3CUYslbzCFw5M'; // Replace with your Google Sheet ID
+const apiKey = 'f1b94dc9ce0a923c1dac3d39ae1f9e252e614e1e';  // Replace with your new API key
+const range = 'regina-safety-map';  // The name of your sheet or range you're accessing
+const sheetURL = `https://sheets.googleapis.com/v4/spreadsheets/${sheetID}/values/${range}?key=${apiKey}`;
+  console.log(sheetURL);
   // URL to your published Google Sheet (make sure the sheet is published to the web)
-  const sheetURL = 'https://spreadsheets.google.com/feeds/list/1kcR6ZqQ0YN2E-G0uTS3mz_pFXoAa4N3CUYslbzCFw5M/od6/public/values?alt=json';
+  //const sheetURL = 'https://spreadsheets.google.com/feeds/list/1kcR6ZqQ0YN2E-G0uTS3mz_pFXoAa4N3CUYslbzCFw5M/od6/public/values?alt=json';
 //https://docs.google.com/spreadsheets/d/1kcR6ZqQ0YN2E-G0uTS3mz_pFXoAa4N3CUYslbzCFw5M/edit?usp=sharing
     
   // Fetch data from Google Sheets
