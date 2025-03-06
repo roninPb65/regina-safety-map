@@ -27,6 +27,8 @@
     const data = await response.json();
     const entries = data.feed.entry;
 
+    console.log(response,data,entries);
+
     entries.forEach(entry => {
       const locationName = entry.gsx$location.$t;
       const safetyStatus = entry.gsx$safetystatus.$t;
