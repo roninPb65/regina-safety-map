@@ -22,10 +22,12 @@
   const sheetID = '1kcR6ZqQ0YN2E-G0uTS3mz_pFXoAa4N3CUYslbzCFw5M'; // Replace with your Google Sheet ID
 const apiKey = 'AIzaSyCgM-QmovG5LFPRwOGd_ZD_dygszYkFByI';  // Replace with your new API key
 const range = 'Form Responses 1';  // The name of your sheet or range you're accessing
-const sheetURL = `https://sheets.googleapis.com/v4/spreadsheets/${sheetID}/values/'${range}'?key=${apiKey}`;
+  const sheetURL = `https://sheets.googleapis.com/v4/spreadsheets/1kcR6ZqQ0YN2E-G0uTS3mz_pFXoAa4N3CUYslbzCFw5M/values/'Form%20Responses%201'?key=AIzaSyCgM-QmovG5LFPRwOGd_ZD_dygszYkFByI`;
+//const sheetURL = `https://sheets.googleapis.com/v4/spreadsheets/${sheetID}/values/'${range}'?key=${apiKey}`;
   console.log(sheetURL);
   // URL to your published Google Sheet (make sure the sheet is published to the web)
   //const sheetURL = 'https://spreadsheets.google.com/feeds/list/key/od6/public/values?alt=json';
+  
   //const sheetURL = 'https://docs.google.com/spreadsheets/d/key/edit?gid=634071091#gid=634071091';
     
   // Fetch data from Google Sheets
