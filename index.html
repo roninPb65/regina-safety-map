@@ -4,15 +4,28 @@
   <title>Regina Safety Map</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+    .container { display: flex; flex-wrap: wrap; }
+    .box { flex: 1; min-width: 300px; padding: 10px; }
+    iframe { width: 100%; height: 480px; border: none; }
+    #map { height: 500px; width: 100%; }
+  </style>
 </head>
 <body>
     <h2>Regina Safety Map</h2>
-    <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdWj35cPdCx9fsBj20PNxGfaxRc2J1waQrvF0oV_KjrPrarUg/viewform?embedded=true" width="640" height="480">Loading…</iframe>
-    <div id="map" style="height: 500px;"></div>
+    <div class="container">
+        <div class="box">
+            <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdWj35cPdCx9fsBj20PNxGfaxRc2J1waQrvF0oV_KjrPrarUg/viewform?embedded=true">Loading…</iframe>
+        </div>
+        <div class="box">
+            <div id="map"></div>
+        </div>
+    </div>
 
     <script>
         // Initialize the map
-        const map = L.map('map').setView([50.4454, -104.6185], 12); // Regina's coordinates
+        const map = L.map('map').setView([50.4454, -104.6185], 12);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
@@ -24,30 +37,11 @@
 
         // Indigenous Historical Locations
         const indigenousSites = [
-            {
-                name: "Treaty 4 Governance Centre",
-                lat: 50.6506,
-                lng: -104.6453,
-                description: "A center dedicated to Treaty 4 governance and history.",
-                link: "https://www.treaty4.ca/"
-            },
-            {
-                name: "First Nations University of Canada",
-                lat: 50.4309,
-                lng: -104.6174,
-                description: "Offers Indigenous-focused education and cultural events.",
-                link: "https://www.fnuniv.ca/"
-            },
-            {
-                name: "Royal Saskatchewan Museum",
-                lat: 50.4418,
-                lng: -104.6066,
-                description: "Features Indigenous exhibits and history of the land.",
-                link: "https://royalsaskmuseum.ca/"
-            }
+            { name: "Treaty 4 Governance Centre", lat: 50.6506, lng: -104.6453, description: "A center dedicated to Treaty 4 governance and history.", link: "https://www.treaty4.ca/" },
+            { name: "First Nations University of Canada", lat: 50.4309, lng: -104.6174, description: "Offers Indigenous-focused education and cultural events.", link: "https://www.fnuniv.ca/" },
+            { name: "Royal Saskatchewan Museum", lat: 50.4418, lng: -104.6066, description: "Features Indigenous exhibits and history of the land.", link: "https://royalsaskmuseum.ca/" }
         ];
 
-        // Function to add Indigenous history markers
         function addHistoricalMarkers() {
             indigenousSites.forEach(site => {
                 var marker = L.marker([site.lat, site.lng]).addTo(map);
@@ -55,7 +49,6 @@
             });
         }
 
-        // Fetch data from Google Sheets
         async function fetchSafetyReports() {
             try {
                 const response = await fetch(sheetURL);
@@ -65,16 +58,13 @@
                     console.error("No valid data found.");
                     return;
                 }
-
                 console.log("Fetched Data:", data);
                 const rows = data.values.slice(1);
-
                 rows.forEach(async (row) => {
                     const locationName = row[1];
                     const safetyStatus = row[2];
                     const notes = row[3] || "No additional notes";
                     const { lat, lng } = await getCoordinates(locationName);
-
                     if (lat && lng) {
                         addMarker(lat, lng, locationName, safetyStatus, notes);
                     } else {
@@ -86,13 +76,11 @@
             }
         }
 
-        // Function to fetch coordinates from OpenStreetMap API
         async function getCoordinates(locationName) {
             try {
                 const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(locationName + ', Regina, Saskatchewan')}`;
                 const response = await fetch(url);
                 const data = await response.json();
-
                 if (data.length > 0) {
                     return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
                 }
@@ -102,13 +90,11 @@
             return { lat: null, lng: null };
         }
 
-        // Function to add markers to the map
         function addMarker(lat, lng, locationName, safetyStatus, notes) {
             var marker = L.marker([lat, lng]).addTo(map);
             marker.bindPopup(`<b>${locationName}</b><br>Safety Status: ${safetyStatus}<br>${notes}`);
         }
 
-        // Call functions to fetch and display data
         fetchSafetyReports();
         addHistoricalMarkers();
     </script>
