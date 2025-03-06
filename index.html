@@ -3,61 +3,66 @@
 <head>
   <title>Regina Safety Map</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-<link rel="preload" href="https://docs.google.com/static/spreadsheets2/client/css/2704924847-waffle_k_ltr.css" as="style"> 
-
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 </head>
 <body>
     <h2>Regina Safety Map</h2>
- <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdWj35cPdCx9fsBj20PNxGfaxRc2J1waQrvF0oV_KjrPrarUg/viewform?embedded=true" width="640" height="480">Loading…</iframe>
-<div id="map" style="height: 500px;"></div>
+    <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdWj35cPdCx9fsBj20PNxGfaxRc2J1waQrvF0oV_KjrPrarUg/viewform?embedded=true" width="640" height="480">Loading…</iframe>
+    <div id="map" style="height: 500px;"></div>
 
-<script>
-  // Initialize the map
-  const map = L.map('map').setView([50.4454, -104.6185], 12); // Regina's coordinates
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-  }).addTo(map);
+    <script>
+        // Initialize the map
+        const map = L.map('map').setView([50.4454, -104.6185], 12); // Regina's coordinates
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
 
-  const sheetID = '1kcR6ZqQ0YN2E-G0uTS3mz_pFXoAa4N3CUYslbzCFw5M'; // Replace with your Google Sheet ID
-const apiKey = 'AIzaSyCgM-QmovG5LFPRwOGd_ZD_dygszYkFByI';  // Replace with your new API key
-const range = 'Form Responses 1';  // The name of your sheet or range you're accessing
- 
-const sheetURL = `https://sheets.googleapis.com/v4/spreadsheets/${sheetID}/values/'Form%20Responses%201'?key=${apiKey}`;
-  console.log(sheetURL);
-  // URL to your published Google Sheet (make sure the sheet is published to the web)
-  //const sheetURL = 'https://spreadsheets.google.com/feeds/list/key/od6/public/values?alt=json';
-  
-  //const sheetURL = 'https://docs.google.com/spreadsheets/d/key/edit?gid=634071091#gid=634071091';
-    
-  // Fetch data from Google Sheets
-  async function fetchSafetyReports() {
-    const response = await fetch(sheetURL);
-    const data = await response.json();
-    const entries = data.feed.entry;
+        const sheetID = '1kcR6ZqQ0YN2E-G0uTS3mz_pFXoAa4N3CUYslbzCFw5M'; // Google Sheet ID
+        const apiKey = 'AIzaSyCgM-QmovG5LFPRwOGd_ZD_dygszYkFByI';  // Your API key
+        const range = 'Form Responses 1';  // Sheet name (no quotes needed)
 
-    console.log(response,data,entries);
+        const sheetURL = `https://sheets.googleapis.com/v4/spreadsheets/${sheetID}/values/${range}?key=${apiKey}`;
 
-    entries.forEach(entry => {
-      const locationName = entry.gsx$location.$t;
-      const safetyStatus = entry.gsx$safetystatus.$t;
-      const lat = parseFloat(entry.gsx$latitude.$t);
-      const lng = parseFloat(entry.gsx$longitude.$t);
+        // Fetch data from Google Sheets
+        async function fetchSafetyReports() {
+            try {
+                const response = await fetch(sheetURL);
+                const data = await response.json();
 
-      // Add a marker to the map
-      addMarker(lat, lng, locationName, safetyStatus);
-    });
-  }
+                if (!data.values || data.values.length < 2) {
+                    console.error("No valid data found.");
+                    return;
+                }
 
-  // Function to add markers to the map
-  function addMarker(lat, lng, locationName, safetyStatus) {
-    var marker = L.marker([lat, lng]).addTo(map);
-    marker.bindPopup(`<b>${locationName}</b><br>Safety Status: ${safetyStatus}`);
-  }
+                console.log("Fetched Data:", data); // Debugging
 
-  // Call the function to fetch and display safety reports
-  fetchSafetyReports();
-</script>
+                const rows = data.values.slice(1); // Skip header row
 
+                rows.forEach(row => {
+                    const timestamp = row[0]; // Timestamp (not used)
+                    const locationName = row[1]; // Location Name
+                    const safetyStatus = row[2]; // Safety Status
+                    const notes = row[3] || "No additional notes"; // Additional Notes (Optional)
+                    
+                    // Use random or default lat/lng since the sheet doesn't have coordinates
+                    const lat = 50.4454 + (Math.random() - 0.5) * 0.02;
+                    const lng = -104.6185 + (Math.random() - 0.5) * 0.02;
+
+                    addMarker(lat, lng, locationName, safetyStatus, notes);
+                });
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        }
+
+        // Function to add markers to the map
+        function addMarker(lat, lng, locationName, safetyStatus, notes) {
+            var marker = L.marker([lat, lng]).addTo(map);
+            marker.bindPopup(`<b>${locationName}</b><br>Safety Status: ${safetyStatus}<br>${notes}`);
+        }
+
+        // Call the function to fetch and display safety reports
+        fetchSafetyReports();
+    </script>
 </body>
 </html>
