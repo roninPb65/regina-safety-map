@@ -125,8 +125,9 @@
         try {
           // Fetch first 10 files
           response = await gapi.client.sheets.spreadsheets.values.get({
-            spreadsheetId: '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms',
-            range: 'Class Data!A2:E',
+            spreadsheetId: '1kcR6ZqQ0YN2E-G0uTS3mz_pFXoAa4N3CUYslbzCFw5M',
+            //spreadsheetId: '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms',
+            range: 'regina-safety-map!B2:D',
           });
         } catch (err) {
           document.getElementById('content').innerText = err.message;
