@@ -1,4 +1,4 @@
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -148,9 +148,9 @@
           // encodeURIComponent
 
            await new Promise(resolve => setTimeout(resolve, 1500));
-              //const corsProxy = "https://cors-anywhere.herokuapp.com/";
-//const url = `${corsProxy}https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(locationName + ', Regina, Saskatchewan')}`;
-                const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(locationName + ', Regina, Saskatchewan')}`;
+              const corsProxy = "https://cors-anywhere.herokuapp.com/";
+const url = `${corsProxy}https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(locationName + ', Regina, Saskatchewan')}`;
+                //const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(locationName + ', Regina, Saskatchewan')}`;
           
             try {
         const response = await fetch(url);
