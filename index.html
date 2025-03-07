@@ -146,14 +146,21 @@
         async function getCoordinates(locationName) {
           //console.log(locationName);
           // encodeURIComponent
+
+           await new Promise(resolve => setTimeout(resolve, 1500));
+              //const corsProxy = "https://cors-anywhere.herokuapp.com/";
+//const url = `${corsProxy}https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(locationName + ', Regina, Saskatchewan')}`;
+                const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(locationName + ', Regina, Saskatchewan')}`;
+          
             try {
-              await new Promise(resolve => setTimeout(resolve, 5000));
-              const corsProxy = "https://cors-anywhere.herokuapp.com/";
-const url = `${corsProxy}https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(locationName + ', Regina, Saskatchewan')}`;
-               // const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(locationName + ', Regina, Saskatchewan')}`;
-                
         const response = await fetch(url);
 
+              if (response.status === 429) {
+                  console.warn("Rate limited! Waiting before retrying...");
+                  await new Promise(resolve => setTimeout(resolve, 5000)); // Wait 5 seconds
+                  return getCoordinates(locationName); // Retry request
+              }
+              
               if (!response.ok) {
                   throw new Error(`HTTP error! Status: ${response.status}`);
               }
