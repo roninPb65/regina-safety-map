@@ -16,6 +16,7 @@
       background-attachment: fixed;
       background-size: cover;
     }
+
     h2 {
       text-align: center;
       margin: 20px 0;
@@ -86,33 +87,31 @@
       background-color: #25242447;
     }
 
-    /* Define custom classes for different safety statuses */
-    .safe-marker {
-      background-color: #28a745;
+    /* Default marker styles */
+    .leaflet-div-icon {
+      background-color: #007bff;
       border-radius: 50%;
-      width: 24px;
-      height: 24px;
+      width: 20px;
+      height: 20px;
+      display: inline-block;
+      border: none;
+    }
+
+    /* Safety status classes */
+    .safe-marker {
+      background-color: #28a745 !important; /* Green */
     }
 
     .unsafe-marker {
-      background-color: #dc3545;
-      border-radius: 50%;
-      width: 24px;
-      height: 24px;
+      background-color: #dc3545 !important; /* Red */
     }
 
     .unknown-marker {
-      background-color: #ffc107;
-      border-radius: 50%;
-      width: 24px;
-      height: 24px;
+      background-color: #ffc107 !important; /* Yellow */
     }
 
     .not-given-marker {
-      background-color: #ffc107;
-      border-radius: 50%;
-      width: 24px;
-      height: 24px;
+      background-color: #ffc107 !important; /* Yellow (same as unknown) */
     }
   </style>
 </head>
@@ -193,7 +192,7 @@
         function addMarker(lat, lng, locationName, safetyStatus, notes) {
             const markerClass = safetyClasses[safetyStatus.toLowerCase()] || safetyClasses["not given"];
             const marker = L.divIcon({
-                className: markerClass,
+                className: `leaflet-div-icon ${markerClass}`,
                 iconSize: [24, 24],
                 iconAnchor: [12, 12]  // Center of the circle
             });
