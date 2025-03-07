@@ -1,4 +1,5 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,17 +14,17 @@
     background: url(Saskatchewan-Provincial-Legislative-Building-in-Wascana-Centre.jpg);
     background-position: center;
     background-attachment: fixed;
-      background-size: cover;
-}
+    background-size: cover;
+    }
     h2 {
-    text-align: center;
-    margin: 20px 0;
-    font-size: 45px;
-    color: #676c70fc;
-    text-shadow: 1px 2px 9px #fcfcfc5c;
-    background-color: #f0f8ffb5;
-}
- 
+      text-align: center;
+      margin: 20px 0;
+      font-size: 45px;
+      color: #676c70fc;
+      text-shadow: 1px 2px 9px #fcfcfc5c;
+      background-color: #f0f8ffb5;
+    }
+
     body {
       font-family: Arial, sans-serif;
       margin: 0;
@@ -74,18 +75,17 @@
       background-color: #0056b3;
     }
     .box {
-    background-color: #25242447;
-}
+      background-color: #25242447;
+    }
   </style>
 </head>
 <body>
     <h2>Regina Safety Map</h2>
     <div class="container">
-       
         <div class="box">
             <div id="map"></div>
         </div>
-       <div class="box">
+        <div class="box">
             <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdWj35cPdCx9fsBj20PNxGfaxRc2J1waQrvF0oV_KjrPrarUg/viewform?embedded=true">Loading…</iframe>
         </div>
     </div>
@@ -102,19 +102,13 @@
         const range = 'Form Responses 1';
         const sheetURL = `https://sheets.googleapis.com/v4/spreadsheets/${sheetID}/values/${range}?key=${apiKey}`;
 
-        // Indigenous Historical Locations
-        const indigenousSites = [
-            { name: "Treaty 4 Governance Centre", lat: 50.6506, lng: -104.6453, description: "A center dedicated to Treaty 4 governance and history.", link: "https://www.treaty4.ca/" },
-            { name: "First Nations University of Canada", lat: 50.4309, lng: -104.6174, description: "Offers Indigenous-focused education and cultural events.", link: "https://www.fnuniv.ca/" },
-            { name: "Royal Saskatchewan Museum", lat: 50.4418, lng: -104.6066, description: "Features Indigenous exhibits and history of the land.", link: "https://royalsaskmuseum.ca/" }
-        ];
-
-        function addHistoricalMarkers() {
-            indigenousSites.forEach(site => {
-                var marker = L.marker([site.lat, site.lng]).addTo(map);
-                marker.bindPopup(`<b>${site.name}</b><br>${site.description}<br><a href="${site.link}" target="_blank">Learn More</a>`);
-            });
-        }
+        // Define marker colors based on safety status
+        const safetyColors = {
+            "safe": "green",
+            "unsafe": "red",
+            "unknown": "yellow",  // Default status if not given
+            "not given": "yellow"
+        };
 
         async function fetchSafetyReports() {
             try {
@@ -125,12 +119,11 @@
                     console.error("No valid data found.");
                     return;
                 }
-                console.log("Fetched Data:", data);
+
                 const rows = data.values.slice(1);
                 rows.forEach(async (row) => {
                     const locationName = row[1];
-                 
-                    const safetyStatus = row[2];
+                    const safetyStatus = row[2] || "not given"; // If no status is provided, use "not given"
                     const notes = row[3] || "No additional notes";
                     const { lat, lng } = await getCoordinates(locationName);
                     if (lat && lng) {
@@ -144,17 +137,11 @@
             }
         }
 
-
-               async function getCoordinates(locationName) {
+        async function getCoordinates(locationName) {
             await new Promise(resolve => setTimeout(resolve, 1500));
             const url = `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(locationName + ', Regina, Saskatchewan')}&apiKey=3bca33509e24419592f747477095d977`;
             try {
                 const response = await fetch(url);
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-
                 const data = await response.json();
                 if (data.features && data.features.length > 0) {
                     return { lat: data.features[0].geometry.coordinates[1], lng: data.features[0].geometry.coordinates[0] };
@@ -165,34 +152,17 @@
             return { lat: null, lng: null };
         }
 
+        // Add marker with the appropriate color based on safety status
         function addMarker(lat, lng, locationName, safetyStatus, notes) {
-            var marker = L.marker([lat, lng]).addTo(map);
+            const color = safetyColors[safetyStatus.toLowerCase()] || safetyColors["not given"];
+            var marker = L.marker([lat, lng], { icon: L.divIcon({ className: 'leaflet-div-icon', html: `<div style="background-color: ${color}; width: 20px; height: 20px; border-radius: 50%;"></div>` }) }).addTo(map);
             marker.bindPopup(`<b>${locationName}</b><br>Safety Status: ${safetyStatus}<br>${notes}`);
         }
 
         fetchSafetyReports();
-      // first nation
-        //addHistoricalMarkers();
-
-
-     if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/regina-safety-map/service-worker.js').then((registration) => {
-      console.log('Service Worker registered with scope:', registration.scope);
-    }).catch((error) => {
-      console.error('Service Worker registration failed:', error);
-    });
-  });
-}
-
-
     </script>
 
     <!-- Bootstrap JS (Optional) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-
- 
-
-       
