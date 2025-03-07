@@ -1,4 +1,5 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,31 +11,34 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
   <style>
     body {
-    background: url(Saskatchewan-Provincial-Legislative-Building-in-Wascana-Centre.jpg);
-    background-position: center;
-    background-attachment: fixed;
+      background: url(Saskatchewan-Provincial-Legislative-Building-in-Wascana-Centre.jpg);
+      background-position: center;
+      background-attachment: fixed;
       background-size: cover;
-}
+    }
+
     h2 {
-    text-align: center;
-    margin: 20px 0;
-    font-size: 45px;
-    color: #676c70fc;
-    text-shadow: 1px 2px 9px #fcfcfc5c;
-    background-color: #f0f8ffb5;
-}
- 
+      text-align: center;
+      margin: 20px 0;
+      font-size: 45px;
+      color: #676c70fc;
+      text-shadow: 1px 2px 9px #fcfcfc5c;
+      background-color: #f0f8ffb5;
+    }
+
     body {
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
       background-color: #f4f6f9;
     }
+
     h2 {
       text-align: center;
       margin: 20px 0;
       color: #2d3e50;
     }
+
     .container {
       display: flex;
       flex-wrap: wrap;
@@ -42,6 +46,7 @@
       justify-content: center;
       margin-bottom: 20px;
     }
+
     .box {
       flex: 1;
       min-width: 300px;
@@ -50,17 +55,20 @@
       border-radius: 8px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
+
     iframe {
       width: 100%;
       height: 480px;
       border: none;
       border-radius: 8px;
     }
+
     #map {
       height: 500px;
       width: 100%;
       border-radius: 8px;
     }
+
     .btn {
       background-color: #0069d9;
       color: white;
@@ -70,22 +78,40 @@
       cursor: pointer;
       transition: background-color 0.3s;
     }
+
     .btn:hover {
       background-color: #0056b3;
     }
+
     .box {
-    background-color: #25242447;
-}
+      background-color: #25242447;
+    }
+
+    /* Custom marker class styles */
+    .red_mark {
+/*       background-color: red !important; */
+      filter: sepia(100%);
+    filter: hue-rotate(180deg);
+    }
+
+    .green_mark {
+/*       background-color: green !important; */
+/*        filter: sepia(100%); */
+    }
+
+    .blue_mark {
+/*       background-color: blue !important; */
+/*       filter: sepia(100%); */
+    }
   </style>
 </head>
 <body>
     <h2>Regina Safety Map</h2>
     <div class="container">
-       
         <div class="box">
             <div id="map"></div>
         </div>
-       <div class="box">
+        <div class="box">
             <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdWj35cPdCx9fsBj20PNxGfaxRc2J1waQrvF0oV_KjrPrarUg/viewform?embedded=true">Loading…</iframe>
         </div>
     </div>
@@ -102,19 +128,13 @@
         const range = 'Form Responses 1';
         const sheetURL = `https://sheets.googleapis.com/v4/spreadsheets/${sheetID}/values/${range}?key=${apiKey}`;
 
-        // Indigenous Historical Locations
-        const indigenousSites = [
-            { name: "Treaty 4 Governance Centre", lat: 50.6506, lng: -104.6453, description: "A center dedicated to Treaty 4 governance and history.", link: "https://www.treaty4.ca/" },
-            { name: "First Nations University of Canada", lat: 50.4309, lng: -104.6174, description: "Offers Indigenous-focused education and cultural events.", link: "https://www.fnuniv.ca/" },
-            { name: "Royal Saskatchewan Museum", lat: 50.4418, lng: -104.6066, description: "Features Indigenous exhibits and history of the land.", link: "https://royalsaskmuseum.ca/" }
-        ];
-
-        function addHistoricalMarkers() {
-            indigenousSites.forEach(site => {
-                var marker = L.marker([site.lat, site.lng]).addTo(map);
-                marker.bindPopup(`<b>${site.name}</b><br>${site.description}<br><a href="${site.link}" target="_blank">Learn More</a>`);
-            });
-        }
+        // Define safety status to color mapping
+        const safetyColors = {
+            "safe": "#28a745",      // Green
+            "unsafe": "#dc3545",    // Red
+            "unknown": "#ffc107",   // Yellow
+            "not given": "#ffc107"  // Yellow (same as unknown)
+        };
 
         async function fetchSafetyReports() {
             try {
@@ -125,12 +145,11 @@
                     console.error("No valid data found.");
                     return;
                 }
-                console.log("Fetched Data:", data);
+
                 const rows = data.values.slice(1);
                 rows.forEach(async (row) => {
                     const locationName = row[1];
-                 
-                    const safetyStatus = row[2];
+                    const safetyStatus = row[2] || "not given"; // Default to "not given" if no status
                     const notes = row[3] || "No additional notes";
                     const { lat, lng } = await getCoordinates(locationName);
                     if (lat && lng) {
@@ -144,17 +163,11 @@
             }
         }
 
-
-               async function getCoordinates(locationName) {
+        async function getCoordinates(locationName) {
             await new Promise(resolve => setTimeout(resolve, 1500));
             const url = `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(locationName + ', Regina, Saskatchewan')}&apiKey=3bca33509e24419592f747477095d977`;
             try {
                 const response = await fetch(url);
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-
                 const data = await response.json();
                 if (data.features && data.features.length > 0) {
                     return { lat: data.features[0].geometry.coordinates[1], lng: data.features[0].geometry.coordinates[0] };
@@ -165,27 +178,34 @@
             return { lat: null, lng: null };
         }
 
+        // Add marker with a custom icon based on safety status and add class names
         function addMarker(lat, lng, locationName, safetyStatus, notes) {
-            var marker = L.marker([lat, lng]).addTo(map);
+            const markerIcon = L.icon({
+                iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png', // Default icon
+                iconSize: [25, 41],  // Default size for the marker
+                iconAnchor: [12, 41],  // Point of the icon which will correspond to the marker's location
+                popupAnchor: [1, -34],  // Popup position
+                shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',  // Marker shadow
+                shadowSize: [41, 41]  // Shadow size
+            });
+
+            // Set class based on safety status
+            let markerClass = "blue_mark";  // Default class for "unknown" or "not given"
+            if (safetyStatus.toLowerCase() === "safe") {
+                markerClass = "green_mark";
+            } else if (safetyStatus.toLowerCase() === "unsafe") {
+                markerClass = "red_mark";
+            }
+
+            const marker = L.marker([lat, lng], { icon: markerIcon }).addTo(map);
+
+            // Apply the class to the marker element
+            marker.getElement().classList.add(markerClass);
+
             marker.bindPopup(`<b>${locationName}</b><br>Safety Status: ${safetyStatus}<br>${notes}`);
         }
 
         fetchSafetyReports();
-      // first nation
-        //addHistoricalMarkers();
-
-
-     if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/regina-safety-map/service-worker.js').then((registration) => {
-      console.log('Service Worker registered with scope:', registration.scope);
-    }).catch((error) => {
-      console.error('Service Worker registration failed:', error);
-    });
-  });
-}
-
-
     </script>
 
     <!-- Bootstrap JS (Optional) -->
