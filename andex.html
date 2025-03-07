@@ -86,33 +86,6 @@
     .box {
       background-color: #25242447;
     }
-
-    /* Default marker styles */
-    .leaflet-div-icon {
-      background-color: #007bff;
-      border-radius: 50%;
-      width: 20px;
-      height: 20px;
-      display: inline-block;
-      border: none;
-    }
-
-    /* Safety status classes */
-    .safe-marker {
-      background-color: #28a745 !important; /* Green */
-    }
-
-    .unsafe-marker {
-      background-color: #dc3545 !important; /* Red */
-    }
-
-    .unknown-marker {
-      background-color: #ffc107 !important; /* Yellow */
-    }
-
-    .not-given-marker {
-      background-color: #ffc107 !important; /* Yellow (same as unknown) */
-    }
   </style>
 </head>
 <body>
@@ -138,12 +111,12 @@
         const range = 'Form Responses 1';
         const sheetURL = `https://sheets.googleapis.com/v4/spreadsheets/${sheetID}/values/${range}?key=${apiKey}`;
 
-        // Define safety status to CSS class mapping
-        const safetyClasses = {
-            "safe": "safe-marker",      // Green
-            "unsafe": "unsafe-marker",  // Red
-            "unknown": "unknown-marker", // Yellow
-            "not given": "not-given-marker"  // Yellow (same as "unknown")
+        // Define safety status to color mapping
+        const safetyColors = {
+            "safe": "#28a745",      // Green
+            "unsafe": "#dc3545",    // Red
+            "unknown": "#ffc107",   // Yellow
+            "not given": "#ffc107"  // Yellow (same as unknown)
         };
 
         async function fetchSafetyReports() {
@@ -188,18 +161,32 @@
             return { lat: null, lng: null };
         }
 
-        // Add marker with appropriate class based on safety status
+        // Add marker with a custom icon based on safety status
         function addMarker(lat, lng, locationName, safetyStatus, notes) {
-            const markerClass = safetyClasses[safetyStatus.toLowerCase()] || safetyClasses["not given"];
-            const marker = L.divIcon({
-                className: `leaflet-div-icon ${markerClass}`,
-                iconSize: [24, 24],
-                iconAnchor: [12, 12]  // Center of the circle
+            const markerIcon = L.icon({
+                iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png', // Default icon
+                iconSize: [25, 41],  // Default size for the marker
+                iconAnchor: [12, 41],  // Point of the icon which will correspond to the marker's location
+                popupAnchor: [1, -34],  // Popup position
+                shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',  // Marker shadow
+                shadowSize: [41, 41]  // Shadow size
             });
 
-            L.marker([lat, lng], { icon: marker })
-                .bindPopup(`<b>${locationName}</b><br>Safety Status: ${safetyStatus}<br>${notes}`)
-                .addTo(map);
+            // Set color based on safety status
+            const statusColor = safetyColors[safetyStatus.toLowerCase()] || safetyColors["not given"];
+            const marker = L.marker([lat, lng], { icon: markerIcon }).addTo(map);
+            marker.getElement().style.filter = `hue-rotate(${getHueFromColor(statusColor)}deg)`;  // Apply color overlay to the marker icon
+
+            marker.bindPopup(`<b>${locationName}</b><br>Safety Status: ${safetyStatus}<br>${notes}`);
+        }
+
+        // Helper function to generate hue value based on color
+        function getHueFromColor(color) {
+            const ctx = document.createElement("canvas").getContext("2d");
+            ctx.fillStyle = color;
+            const rgb = ctx.fillStyle.match(/\d+/g);
+            const [r, g, b] = rgb.map(Number);
+            return Math.atan2(r - g, g - b) * (180 / Math.PI);
         }
 
         fetchSafetyReports();
