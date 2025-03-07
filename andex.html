@@ -179,22 +179,25 @@
 
     // Predefined bot responses
     function respondToUser(userMessage) {
-      let response = "";
-      
-      // Simple keyword-based responses
-      if (userMessage.toLowerCase().includes("safety")) {
-        response = "You can view safety reports on this map and get information about safety conditions in Regina.";
-      } else if (userMessage.toLowerCase().includes("location")) {
-        response = "Please provide a location, and I will try to find its coordinates for you.";
-      } else if (userMessage.toLowerCase().includes("indigenous")) {
-        response = "We have various Indigenous historical sites, such as the Treaty 4 Governance Centre.";
-      } else {
-        response = "I'm sorry, I didn't quite get that. Can you ask something else?";
-      }
+  let response = "";
+  
+  // Simple keyword-based responses
+  if (userMessage.toLowerCase().includes("safety")) {
+    response = "You can view safety reports on this map and get information about safety conditions in Regina.";
+  } else if (userMessage.toLowerCase().includes("location")) {
+    response = "Please provide a location, and I will try to find its coordinates for you.";
+  } else if (userMessage.toLowerCase().includes("indigenous")) {
+    response = "We have various Indigenous historical sites, such as the Treaty 4 Governance Centre.";
+  } else if (userMessage.toLowerCase().includes("how are you") || userMessage.toLowerCase().includes("how are u")) {
+    response = "I'm doing great, thank you for asking! How can I assist you today?";
+  } else {
+    response = "I'm sorry, I didn't quite get that. Can you ask something else?";
+  }
 
-      // Add bot response to chat
-      addMessage(response, "bot");
-    }
+  // Add bot response to chat
+  addMessage(response, "bot");
+}
+
 
     // Initialize map
     const map = L.map('map').setView([50.4454, -104.6185], 12);
