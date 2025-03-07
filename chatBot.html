@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dialogflow Integration</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    #chat-box {
+      max-width: 400px;
+      margin: 20px auto;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+    }
+    .message {
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+    }
+    .user {
+      background-color: #d1ecf1;
+      text-align: right;
+    }
+    .bot {
+      background-color: #f8d7da;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <div id="chat-box">
+    <div id="chat"></div>
+    <input type="text" id="user-input" placeholder="Ask me something..." />
+  </div>
+
+  <script>
+    const apiUrl = 'https://api.dialogflow.com/v1/query?v=20150910'; // The Dialogflow API URL
+    const accessToken = 'YOUR_DIALOGFLOW_CLIENT_ACCESS_TOKEN'; // Replace with your access token
+
+    $('#user-input').keypress(function (e) {
+      if (e.which === 13) { // Enter key pressed
+        const userInput = $('#user-input').val();
+        $('#chat').append(`<div class="message user">${userInput}</div>`);
+        $('#user-input').val('');
+
+        sendToDialogflow(userInput);
+      }
+    });
+
+    function sendToDialogflow(userInput) {
+      $.ajax({
+        url: apiUrl,
+        type: 'POST',
+        data: JSON.stringify({
+          query: userInput,
+          lang: 'en',
+          sessionId: '12345', // Can be a unique session ID
+        }),
+        contentType: 'application/json',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+        },
+        success: function (data) {
+          const botResponse = data.result.fulfillment.speech;
+          $('#chat').append(`<div class="message bot">${botResponse}</div>`);
+          $('#chat-box').scrollTop($('#chat-box')[0].scrollHeight);
+        },
+        error: function () {
+          $('#chat').append('<div class="message bot">Sorry, I didn\'t get that. Please try again.</div>');
+        }
+      });
+    }
+  </script>
+</body>
+</html>
