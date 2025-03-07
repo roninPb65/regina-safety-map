@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -57,11 +58,18 @@
 
         async function getCoordinates(locationName) {
             await new Promise(resolve => setTimeout(resolve, 1500));
-            const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(locationName + ', Regina, Saskatchewan')}`;
+            const url = `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(locationName + ', Regina, Saskatchewan')}&apiKey=YOUR_GEOAPIFY_API_KEY`;
             try {
                 const response = await fetch(url);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
                 const data = await response.json();
-                if (data.length > 0) return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+                if (data.features && data.features.length > 0) {
+                    return { lat: data.features[0].geometry.coordinates[1], lng: data.features[0].geometry.coordinates[0] };
+                }
             } catch (error) {
                 console.error("Error fetching coordinates:", error);
             }
