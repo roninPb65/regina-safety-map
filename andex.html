@@ -39,7 +39,7 @@
             try {
                 const sheetID = '1kcR6ZqQ0YN2E-G0uTS3mz_pFXoAa4N3CUYslbzCFw5M';
                 const range = 'Form Responses 1';
-                const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetID}/values/${range}?key=YOUR_GOOGLE_SHEETS_API_KEY`);
+                const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetID}/values/${range}?key=AIzaSyCgM-QmovG5LFPRwOGd_ZD_dygszYkFByI`);
                 const data = await response.json();
 
                 if (!data.values || data.values.length < 2) return;
