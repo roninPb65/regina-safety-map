@@ -144,8 +144,9 @@
 
         async function getCoordinates(locationName) {
           console.log(locationName);
+          // encodeURIComponent
             try {
-                const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(locationName + ',Regina,Saskatchewan')}`;
+                const url = `https://nominatim.openstreetmap.org/search?format=json&q=${(locationName + ',Regina,Saskatchewan')}`;
                
                 const response = await fetch(url);
               console.log(locationName,url,response);
