@@ -143,11 +143,12 @@
         }
 
         async function getCoordinates(locationName) {
+          console.log(locationName);
             try {
                 const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(locationName + ',Regina,Saskatchewan')}`;
                
                 const response = await fetch(url);
-              console.log(url,response);
+              console.log(locationName,url,response);
                 const data = await response.json();
                 if (data.length > 0) {
                     return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
