@@ -127,6 +127,7 @@
                 const rows = data.values.slice(1);
                 rows.forEach(async (row) => {
                     const locationName = row[1];
+                  console.log(locationName);
                     const safetyStatus = row[2];
                     const notes = row[3] || "No additional notes";
                     const { lat, lng } = await getCoordinates(locationName);
